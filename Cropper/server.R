@@ -1,70 +1,3 @@
-
-
-##### V2 NOTES #####
-
-
-## Add buttons/functionality
-  #√ Rotate picture button
-    ## -> rotates the image 90 degrees
-  #√ "Section" buttons (maybe checkboxes for multiple assignments)
-    ## -> records section tag to output table (allow null)
-  ## On save
-    #√ See if there's a way to record the image flip
-      ## Flips should be done BEFORE cropping and saving
-    #√ might have to add new column to output table for flipping string to be passed in final processing
-      ## -> link_id|url/peice|section_tag|rotate_degree_string[optional]|crop_string|
-      ## Going to have to start from scratch on all of these
-        ## Save what you've done somewhere tho, just in case shit
-        #√ Add columns to existing culling tables? Create new table?
-          ## New tabl would mean automatic job that creates tables based on what's got a 1 from the culling tables
-          #√ Using existing table would mean having to ammend a ton of scripts
-            ## It wasn't that many scripts
-  ## on exit
-    ## Rerun intial_view() to add the button back to the UI
-      ## THis should ensure that each time one closes or opens it that the button will always come up first
-  
-
-  ## 09/14/2020 ENDING NOTES:
-    #√ Previous button works going backwards after first set of advancements
-      #√ However, it stops being able to backtrack if you go forward again and then try to hit previous
-
-    #√ Previous button also looks like it requires two clicks to go back one image the first time
-      #√ Something about how idx_chain is written I think/how back_cnt_safe deals with it
-
-    ## Need to write an 'update outputs' type function similar to the intial layout function that just refrehses the text/stats outputs
-
-    #√ Need update image area function for cleaner updates when advancing/retreating/rotating
-
-    ## Section buttons need to be set up to flip the section vars to TRUE
-      ## At each crop, use the reset sections function to flip them all back to FALSE
-      ## Probably just going to build it as a pipe seperated string?
-        ## Maybe just a comma sep string?
-        ## Postgres probably doesn't like tables with arrays as values, going to have to be a string
-    
-    #√ Make the rotate button actually rotate the image
-      #√ Might have to write yet another image function to slip the roate in
-        #X Maybe not, maybe just rewrite over im$raw_img and $resize_img variables by piping them to image_rotate(90)
-        #C Then add 90 to the rotate variable
-
-    ## Cropping button
-      ## Should write out a single line dataframe and then write it to sql?
-        ## Build a larger dataframe then have a function pull out details and write to sql with the save button
-      ## Reset most variables:
-        ## brush info, section variables
-      ## Add one to crops_done variables
-      ## Changes the processed flag to something in the data and writes that out to sql
-
-    ## Save button
-      ## go through the generated dataframe and parse out bits to generate insert statements into the cropped table
-      ## probs should do it by link_id and url pair
-        ## That way we can generate more unique images without overwriting each crop on a repeat image
-      ## Could also use this time to flip the processed flags in sql
-        ## Doesn't have to be here, it would be a different table change
-      ## need to autmatically do the saving if we run out of images and need to pull more in from sql
-        ## That way we don't have to redo images we did between saving last and this new batch of images
-          ## Keeps us from repulling images we already have cropped
-        
-
 ##### LIBRARY #####
 
 library(shiny)
@@ -491,34 +424,9 @@ shinyServer(function(input, output, session) {
                              height = 720,
                              width = 1280
                  )
-          )
-        ),
-        fluidRow(
-          column(width = 3,
-                 h3("Crops This Session"),
-                 textOutput("Box",
-                            inline = TRUE
-                 ),
-                 
-                 
-                 h3("Crops in Corpus"),
-                 textOutput(
-                   "Tots",
-                   inline = TRUE
-                 )
           ),
           column(
             width = 2,
-            h3("Images Left"),
-            textOutput("ImLeft",
-                       inline = TRUE
-            ),
-            h3("Images Done"),
-            textOutput("ImDone",
-                       inline = TRUE)
-          ),
-          column(
-            width = 1,
             actionButton(
               inputId = "section_head",
               label = "O"
@@ -538,8 +446,20 @@ shinyServer(function(input, output, session) {
               inputId = "section_end",
               label = "A"
             ),
-            br()
-          ),
+            br(),
+            br(),
+            h3("Images Left"),
+            textOutput("ImLeft",
+                       inline = TRUE
+            ),
+            h3("Images Done"),
+            textOutput("ImDone",
+                       inline = TRUE),
+            h3("Crops This Session"),
+            textOutput("Box",
+                       inline = TRUE
+            )
+           ),
           column(
             width = 2,
             actionButton(
@@ -572,8 +492,88 @@ shinyServer(function(input, output, session) {
               "Save All Crops"
             )
           )
-          
+
         )
+#        fluidRow(
+#          column(width = 3,
+#                 h3("Crops This Session"),
+#                 textOutput("Box",
+#                            inline = TRUE
+#                 ),
+#
+#                 h3("Crops in Corpus"),
+#                 textOutput(
+#                   "Tots",
+#                   inline = TRUE
+#                 )
+#          ),
+#          column(
+#            width = 2,
+#            h3("Images Left"),
+#            textOutput("ImLeft",
+#                       inline = TRUE
+#            ),
+#            h3("Images Done"),
+#            textOutput("ImDone",
+#                       inline = TRUE)
+#          ),
+#          column(
+#            width = 1,
+#            actionButton(
+#              inputId = "section_head",
+#              label = "O"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "section_chest",
+#              label = "W"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "section_bauch",
+#              label = "I"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "section_end",
+#              label = "A"
+#            ),
+#            br()
+#          ),
+#          column(
+#            width = 2,
+#            actionButton(
+#              inputId = "Crop",
+#              label = "Capture Selection"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "Next",
+#              label = "Next Image"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "Rotate",
+#              label = "Rotate"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "Last",
+#              label = "Previous Image"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "Undo",
+#              label = "Undo Last"
+#            ),
+#            br(),
+#            actionButton(
+#              "save", 
+#              "Save All Crops"
+#            )
+#          )
+#          
+#        )
       )
     })
   })
