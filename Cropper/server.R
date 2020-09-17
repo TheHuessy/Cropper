@@ -426,7 +426,7 @@ shinyServer(function(input, output, session) {
                  )
           ),
           column(
-            width = 1,
+            width = 2,
             actionButton(
               inputId = "section_head",
               label = "O"
@@ -454,7 +454,7 @@ shinyServer(function(input, output, session) {
             ),
             h3("Images Done"),
             textOutput("ImDone",
-                       inline = TRUE)
+                       inline = TRUE),
             h3("Crops This Session"),
             textOutput("Box",
                        inline = TRUE
@@ -493,7 +493,7 @@ shinyServer(function(input, output, session) {
             )
           )
 
-        ),
+        )
 #        fluidRow(
 #          column(width = 3,
 #                 h3("Crops This Session"),
