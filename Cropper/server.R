@@ -424,31 +424,6 @@ shinyServer(function(input, output, session) {
                              height = 720,
                              width = 1280
                  )
-          )
-        ),
-        fluidRow(
-          column(width = 3,
-                 h3("Crops This Session"),
-                 textOutput("Box",
-                            inline = TRUE
-                 ),
-                 
-                 
-                 h3("Crops in Corpus"),
-                 textOutput(
-                   "Tots",
-                   inline = TRUE
-                 )
-          ),
-          column(
-            width = 2,
-            h3("Images Left"),
-            textOutput("ImLeft",
-                       inline = TRUE
-            ),
-            h3("Images Done"),
-            textOutput("ImDone",
-                       inline = TRUE)
           ),
           column(
             width = 1,
@@ -471,8 +446,20 @@ shinyServer(function(input, output, session) {
               inputId = "section_end",
               label = "A"
             ),
-            br()
-          ),
+            br(),
+            br(),
+            h3("Images Left"),
+            textOutput("ImLeft",
+                       inline = TRUE
+            ),
+            h3("Images Done"),
+            textOutput("ImDone",
+                       inline = TRUE)
+            h3("Crops This Session"),
+            textOutput("Box",
+                       inline = TRUE
+            )
+           ),
           column(
             width = 2,
             actionButton(
@@ -505,8 +492,88 @@ shinyServer(function(input, output, session) {
               "Save All Crops"
             )
           )
-          
-        )
+
+        ),
+#        fluidRow(
+#          column(width = 3,
+#                 h3("Crops This Session"),
+#                 textOutput("Box",
+#                            inline = TRUE
+#                 ),
+#
+#                 h3("Crops in Corpus"),
+#                 textOutput(
+#                   "Tots",
+#                   inline = TRUE
+#                 )
+#          ),
+#          column(
+#            width = 2,
+#            h3("Images Left"),
+#            textOutput("ImLeft",
+#                       inline = TRUE
+#            ),
+#            h3("Images Done"),
+#            textOutput("ImDone",
+#                       inline = TRUE)
+#          ),
+#          column(
+#            width = 1,
+#            actionButton(
+#              inputId = "section_head",
+#              label = "O"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "section_chest",
+#              label = "W"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "section_bauch",
+#              label = "I"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "section_end",
+#              label = "A"
+#            ),
+#            br()
+#          ),
+#          column(
+#            width = 2,
+#            actionButton(
+#              inputId = "Crop",
+#              label = "Capture Selection"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "Next",
+#              label = "Next Image"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "Rotate",
+#              label = "Rotate"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "Last",
+#              label = "Previous Image"
+#            ),
+#            br(),
+#            actionButton(
+#              inputId = "Undo",
+#              label = "Undo Last"
+#            ),
+#            br(),
+#            actionButton(
+#              "save", 
+#              "Save All Crops"
+#            )
+#          )
+#          
+#        )
       )
     })
   })
