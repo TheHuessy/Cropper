@@ -233,7 +233,7 @@ shinyServer(function(input, output, session) {
       te <- im$resize_img %>%
         image_write(tempfile(fileext = 'jpg'), format = 'jpg')
       list(src = te, width = resize_width, height = resize_height, contentType = "image/jpeg")
-    })
+    }, deleteFile = TRUE)
   }
   
   update_text_outputs <- function(){
@@ -367,7 +367,10 @@ shinyServer(function(input, output, session) {
     #Not needed when only used on exit, but this will allow for future corp flushing if need be/auto save functionality
     corp <<- corp[-which(corp$processed == TRUE),]
   }
-  
+ 
+  ##### STARTUP LOG PRINTING #####
+  print(format(Sys.time(), "%Y-%m-%d %H:%M"))
+
   ##### ON STOP PARAMETERS #####
   
   onStop(function(){
