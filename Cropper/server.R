@@ -518,7 +518,7 @@ shinyServer(function(input, output, session) {
   ##### HIDE BUTTON #####
   observeEvent(input$hide, {
                  initial_view()
-  }
+  })
 
   ##### O BUTTION #####
   observeEvent(input$section_head, {
