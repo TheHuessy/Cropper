@@ -249,8 +249,8 @@ shinyServer(function(input, output, session) {
       done <- reactive({images_done})
       cat(done())
     })
-    output$Box <- renderPrint({ #crops this session
-      cat(crops_done)
+    output$crops_not_saved <- renderPrint({ #crops this session
+      cat(unsaved_crops)
     })
   }
 
@@ -392,6 +392,7 @@ shinyServer(function(input, output, session) {
 
   crops_done <<- 0
   images_done <<- 0
+  unsaved_crops <<- 0
   crops_left <<- nrow(corp[which(is.na(corp$processed)),])
 
   rotate_degree <<- 0
@@ -459,7 +460,7 @@ shinyServer(function(input, output, session) {
             textOutput("ImDone",
                        inline = TRUE),
             h3("Crops This Session"),
-            textOutput("Box",
+            textOutput("crops_not_saved",
                        inline = TRUE
             )
            ),
@@ -589,6 +590,8 @@ shinyServer(function(input, output, session) {
 
       crops_done <<- crops_done + 1
 
+      unsaved_crops <<- unsaved_crops + 1
+
       #link_id|url/peice|section_tag|rotate_degree_string[optional]|crop_string|
 
       new_line <<- data.frame(link_id=corp$link_id[cnt],
@@ -653,6 +656,9 @@ shinyServer(function(input, output, session) {
       )
     } else{
       crops_done <<- crops_done - 1
+      if (unsaved_crops > 0){
+        unsaved_crops <<- unsaved_crops - 1
+      }
 
       undo_last_df_entry()
       update_text_outputs()
@@ -729,6 +735,7 @@ shinyServer(function(input, output, session) {
         easyClose = TRUE
       )
     )
+    unsaved_crops <<- 0
     reset_output_df()
     update_text_outputs()
 
