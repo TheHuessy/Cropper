@@ -459,7 +459,11 @@ shinyServer(function(input, output, session) {
             h3("Images Done"),
             textOutput("ImDone",
                        inline = TRUE),
-            h3("Crops Not Saved"),
+            h3("Crops This Session"),
+            textOutput("Tots",
+                       inline = TRUE
+            ),
+             h3("Crops Not Saved"),
             textOutput("crops_not_saved",
                        inline = TRUE
             )
