@@ -493,7 +493,13 @@ shinyServer(function(input, output, session) {
             actionButton(
               "save", 
               "Save All Crops"
+            ),
+           br(),
+            actionButton(
+              "hide", 
+              "Hide"
             )
+ 
           )
 
         )
@@ -507,6 +513,11 @@ shinyServer(function(input, output, session) {
   ##### MAIN IMAGE OUTPUT #####   
   
   refresh_image(im)
+
+  ##### HIDE BUTTON #####
+  observeEvent(input$hide, {
+                 initial_view()
+  }
 
   ##### O BUTTION #####
   observeEvent(input$section_head, {
