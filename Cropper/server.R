@@ -368,6 +368,13 @@ shinyServer(function(input, output, session) {
     corp <<- corp[-which(corp$processed == TRUE),]
   }
 
+  save_crops <- function(){
+    write_df_to_sql(crop_output_df)
+    unsaved_crops <<- 0
+    reset_output_df()
+    update_text_outputs()
+  }
+
   ##### STARTUP LOG PRINTING #####
   print(format(Sys.time(), "%Y-%m-%d %H:%M"))
 
@@ -609,6 +616,10 @@ shinyServer(function(input, output, session) {
 
       crop_output_df <<- rbind(crop_output_df, new_line)  
 
+      if (crops_done %% 5 == 0){
+        save_crops()
+      }
+
       clear_sections()
 
       update_text_outputs()
@@ -729,8 +740,7 @@ shinyServer(function(input, output, session) {
 
   ##### SAVE BUTTON #####
   observeEvent(input$save, {
-    write_df_to_sql(crop_output_df)
-    #show a confirmation
+    save_crops()
     showModal(
       modalDialog(
         title = "Save Complete",
@@ -739,10 +749,6 @@ shinyServer(function(input, output, session) {
         easyClose = TRUE
       )
     )
-    unsaved_crops <<- 0
-    reset_output_df()
-    update_text_outputs()
-
   })
 
 })
