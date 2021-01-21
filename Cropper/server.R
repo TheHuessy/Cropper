@@ -187,8 +187,8 @@ shinyServer(function(input, output, session) {
     original_width <- im$raw_width
     original_height <- im$raw_width
 
-    x_conversion <- original_width/display_width
-    y_conversion <- original_height/display_height
+    x_conversion <- display_width/original_width
+    y_conversion <- display_height/original_height
 
     yx <- brush_info$ymax
     yn <- brush_info$ymin
