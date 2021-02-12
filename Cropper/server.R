@@ -307,7 +307,8 @@ shinyServer(function(input, output, session) {
                              ")",
                              sep = ""
       )
-      dbExecute(sql_con, insert_string)
+      #dbExecute(sql_con, insert_string)
+      write.csv(df, file="output.csv", row.names=FALSE)
 
       # Keeping this in for logging purposes, may end up being too much in the long run
       print(insert_string)
