@@ -198,10 +198,10 @@ shinyServer(function(input, output, session) {
     #[X.size.total width]x[Y.size.total height]+[X.offset from the left]+[Y.offset from the top]
     #[Xs]x[Ys]+[Xo]+[Yo]
 
-    Xs <- (xx-xn)*x_conversion
-    Ys <- (yx-yn)*y_conversion
-    Xo <- xn*x_conversion
-    Yo <- yn*y_conversion
+    Xs <- (xx-xn)#*x_conversion ## Keeping these out so that we're just returning the raw 720 height image bounds. It is assumed on the batch side that the image will always be 720 pixels high
+    Ys <- (yx-yn)#*y_conversion
+    Xo <- xn#*x_conversion
+    Yo <- yn#*y_conversion
 
 
     boxc <- paste(Xs, "x", Ys, "+", Xo, "+", Yo, sep = "")
@@ -611,6 +611,8 @@ shinyServer(function(input, output, session) {
                               rotate_degree=rotate_degree,
                               crop_string=bounds
                               )
+
+      print(new_line)
 
 
 
