@@ -181,14 +181,14 @@ shinyServer(function(input, output, session) {
   }
 
   get_bounds <- function(brush_info){
-    display_width <- im$resize_width
-    display_height <- im$resize_height
+    #display_width <- im$resize_width
+    #display_height <- im$resize_height
 
-    original_width <- im$raw_width
-    original_height <- im$raw_width
+    #original_width <- im$raw_width
+    #original_height <- im$raw_width
 
-    x_conversion <- display_width/original_width
-    y_conversion <- display_height/original_height
+    #x_conversion <- display_width/original_width
+    #y_conversion <- display_height/original_height
 
     yx <- brush_info$ymax
     yn <- brush_info$ymin
@@ -373,6 +373,17 @@ shinyServer(function(input, output, session) {
     unsaved_crops <<- 0
     reset_output_df()
     update_text_outputs()
+  }
+
+  generate_full_info <- function(brush_info, im){
+    image_info_full <- list(link=im$link, resizewidth=im$resize_width, resizeheight=im$resize_height, rawwidth=im$raw_width, rawheight=im$raw_height)
+    brush_info_full <- list(brushxmin=brush_info$xmin, brushymin=brush_info$ymin, brushxmax=brush_info$xmax, brushymax=brush_info$ymax)
+    all_data <- c(image_info_full, brush_info_full)
+    print(all_data)
+
+    ## WRITE OUT QUICK AND EASY TO A CSV
+    write.table(data.frame(all_data), sep=",", "qc_killme.csv", row.names = FALSE, col.names=FALSE, append=TRUE)
+
   }
 
   ##### STARTUP LOG PRINTING #####
@@ -614,7 +625,7 @@ shinyServer(function(input, output, session) {
 
       print(new_line)
 
-
+      generate_full_info(input$plot_brush1, im)
 
       crop_output_df <<- rbind(crop_output_df, new_line)  
 
@@ -742,7 +753,9 @@ shinyServer(function(input, output, session) {
 
   ##### SAVE BUTTON #####
   observeEvent(input$save, {
-    save_crops()
+    if (unsaved_crops > 0){
+      save_crops()
+    }
     showModal(
       modalDialog(
         title = "Save Complete",
