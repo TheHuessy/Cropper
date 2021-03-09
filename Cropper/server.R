@@ -375,10 +375,11 @@ shinyServer(function(input, output, session) {
     update_text_outputs()
   }
 
-  generate_full_info <- function(brush_info, im){
+  generate_full_info <- function(brush_info, im, time_now){
+    crop_time = list(timestamp=time_now)
     image_info_full <- list(link=im$link, resizewidth=im$resize_width, resizeheight=im$resize_height, rawwidth=im$raw_width, rawheight=im$raw_height)
     brush_info_full <- list(brushxmin=brush_info$xmin, brushymin=brush_info$ymin, brushxmax=brush_info$xmax, brushymax=brush_info$ymax)
-    all_data <- c(image_info_full, brush_info_full)
+    all_data <- c(crop_time,image_info_full, brush_info_full)
     print(all_data)
 
     ## WRITE OUT QUICK AND EASY TO A CSV
@@ -614,18 +615,20 @@ shinyServer(function(input, output, session) {
 
       unsaved_crops <<- unsaved_crops + 1
 
+      time_now <<- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
       #link_id|url/peice|section_tag|rotate_degree_string[optional]|crop_string|
 
       new_line <<- data.frame(link_id=corp$link_id[cnt],
                               url=corp$url[cnt],
                               section_tag=get_sections(),
                               rotate_degree=rotate_degree,
-                              crop_string=bounds
+                              crop_string=bounds,
+                              timestamp=time_now
                               )
 
       print(new_line)
 
-      generate_full_info(input$plot_brush1, im)
+      generate_full_info(input$plot_brush1, im, time_now)
 
       crop_output_df <<- rbind(crop_output_df, new_line)  
 
