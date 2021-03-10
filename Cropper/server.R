@@ -35,11 +35,11 @@ shinyServer(function(input, output, session) {
 
   pull_data <- function(){
     sql_con <- sql_connect(creds)
-    pull_data <- dbGetQuery(sql_con,statement="SELECT link_id, end_link as URL, processed, 'pulls' as table_name FROM pulls WHERE processed is NULL AND link_type = 'Direct' ORDER BY random() LIMIT 50")
+    pulls_data <- dbGetQuery(sql_con,statement="SELECT link_id, end_link as URL, processed, 'pulls' as table_name FROM pulls WHERE processed is NULL AND link_type = 'Direct' ORDER BY random() LIMIT 50")
     ext_data <- dbGetQuery(sql_con,statement="SELECT link_id, piece as URL, processed, 'culling_external' as table_name FROM culling_external WHERE keep = 1 AND processed is NULL ORDER BY random() LIMIT 50")
     dir_data <- dbGetQuery(sql_con,statement="SELECT link_id, end_link as URL, processed, 'culling_direct' as table_name FROM culling_direct WHERE keep = 1 AND processed is NULL ORDER BY random() LIMIT 50")
 
-    work <- rbind(pull_data, ext_data, dir_data) %>%
+    work <- rbind(pulls_data, ext_data, dir_data) %>%
       .[sample(nrow(.)),]
     dbDisconnect(sql_con)
     return(work)
@@ -297,13 +297,15 @@ shinyServer(function(input, output, session) {
       section_info <- df$section_tag[idx]
       rotate_info <- df$rotate_degree[idx]
       crop_info <- df$crop_string[idx]
+      time_info <- df$timestamp
 
-      insert_string <- paste("INSERT INTO cropped(link_id, url, section_tag, rotate_degree_string, crop_string) VALUES(",
+      insert_string <- paste("INSERT INTO cropped(link_id, url, section_tag, rotate_degree_string, crop_string, timestamp) VALUES(",
                              "'",link_info, "'", ",",
                              "'",url_info, "'", ",",
                              "'",section_info, "'", ",",
                              rotate_info, ",",
-                             "'",crop_info, "'",
+                             "'",crop_info, "'", ","
+                             "'",time_info, "'",
                              ")",
                              sep = ""
       )
@@ -719,7 +721,7 @@ shinyServer(function(input, output, session) {
 
     cnt <<- get_cnt_safe(corp, cnt)
 
-    update_text_outputs()    
+    update_text_outputs()
 
     if (cnt > length(corp$url)) {
       im <<- fetch_placeholder()
