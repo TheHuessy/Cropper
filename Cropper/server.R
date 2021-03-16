@@ -297,15 +297,29 @@ shinyServer(function(input, output, session) {
       section_info <- df$section_tag[idx]
       rotate_info <- df$rotate_degree[idx]
       crop_info <- df$crop_string[idx]
-      time_info <- df$timestamp
+      time_info <- df$timestamp[idx]
+      x_min <- df$x_min[idx]
+      y_min <- df$y_min[idx]
+      x_max <- df$x_max[idx]
+      y_max <- df$y_max[idx]
+      conv <- df$conversion[idx]
+      raw_height <- df$orig_height[idx]
+      raw_width <- df$orig_width[idx]
 
-      insert_string <- paste("INSERT INTO cropped(link_id, url, section_tag, rotate_degree_string, crop_string, timestamp) VALUES(",
+      insert_string <- paste("INSERT INTO cropped(link_id, url, section_tag, rotate_degree_string, crop_string, timestamp, x_min, y_min, x_max, y_max, conv, raw_height, raw_width) VALUES(",
                              "'",link_info, "'", ",",
                              "'",url_info, "'", ",",
                              "'",section_info, "'", ",",
                              rotate_info, ",",
                              "'",crop_info, "'", ",",
-                             "'",time_info, "'",
+                             "'",time_info, "'", ",",
+                             "'",x_min, "'", ",",
+                             "'",y_min, "'", ",",
+                             "'",x_max, "'", ",",
+                             "'",y_max, "'", ",",
+                             "'",conv, "'", ",",
+                             "'",raw_height, "'", ",",
+                             "'",raw_width, "'",
                              ")",
                              sep = ""
       )
@@ -377,16 +391,9 @@ shinyServer(function(input, output, session) {
     update_text_outputs()
   }
 
-  generate_full_info <- function(brush_info, im, time_now){
-    crop_time = list(timestamp=time_now)
-    image_info_full <- list(link=im$link, resizewidth=im$resize_width, resizeheight=im$resize_height, rawwidth=im$raw_width, rawheight=im$raw_height)
-    brush_info_full <- list(brushxmin=brush_info$xmin, brushymin=brush_info$ymin, brushxmax=brush_info$xmax, brushymax=brush_info$ymax)
-    all_data <- c(crop_time,image_info_full, brush_info_full)
-    print(all_data)
-
-    ## WRITE OUT QUICK AND EASY TO A CSV
-    write.table(data.frame(all_data), sep=",", "qc_killme.csv", row.names = FALSE, col.names=FALSE, append=TRUE)
-
+  generate_image_info <- function(brush_info){
+    img_conv = 720/as.numeric(im$raw_height)
+    image_info_full <- list( rawwidth=im$raw_width, rawheight=im$raw_height, conversion=img_conv)
   }
 
   ##### STARTUP LOG PRINTING #####
@@ -609,7 +616,11 @@ shinyServer(function(input, output, session) {
       )
       } else {
 
-      bounds <<- get_bounds(input$plot_brush1)
+      brush_info_full <<- isolate(input$plot_brush1)
+
+      image_info_full <<- generate_image_info(brush_info_full)
+
+      bounds <<- get_bounds(brush_info_full)
 
       section_string <<- get_sections()
 
@@ -619,10 +630,6 @@ shinyServer(function(input, output, session) {
 
       time_now <<- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
 
-      #brush_info_full <<- list(brushxmin=input$plot_brush1$xmin, brushymin=input$plot_brush1$ymin, brushxmax=input$plot_brush1$xmax, brushymax=input$plot_brush1$ymax)
-      brush_info_full <<- isolate(input$plot_brush1)
-
-      crop_output_df
       #link_id|url/peice|section_tag|rotate_degree_string[optional]|crop_string|
 
       new_line <<- data.frame(link_id=corp$link_id[cnt],
@@ -634,12 +641,11 @@ shinyServer(function(input, output, session) {
                               x_min=brush_info_full$xmin,
                               y_min=brush_info_full$ymin,
                               x_max=brush_info_full$xmax,
-                              y_max=brush_info_full$ymax
+                              y_max=brush_info_full$ymax,
+                              conversion=image_info_full$conversion,
+                              orig_height=image_info_full$rawheight,
+                              orig_width=image_info_full$rawwidth
                               )
-
-      #print(new_line)
-
-      generate_full_info(input$plot_brush1, im, time_now)
 
       crop_output_df <<- rbind(crop_output_df, new_line)  
 
