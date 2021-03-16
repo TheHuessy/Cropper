@@ -304,7 +304,7 @@ shinyServer(function(input, output, session) {
                              "'",url_info, "'", ",",
                              "'",section_info, "'", ",",
                              rotate_info, ",",
-                             "'",crop_info, "'", ","
+                             "'",crop_info, "'", ",",
                              "'",time_info, "'",
                              ")",
                              sep = ""
@@ -618,6 +618,11 @@ shinyServer(function(input, output, session) {
       unsaved_crops <<- unsaved_crops + 1
 
       time_now <<- format(Sys.time(), "%Y-%m-%d %H:%M:%S")
+
+      #brush_info_full <<- list(brushxmin=input$plot_brush1$xmin, brushymin=input$plot_brush1$ymin, brushxmax=input$plot_brush1$xmax, brushymax=input$plot_brush1$ymax)
+      brush_info_full <<- isolate(input$plot_brush1)
+
+      crop_output_df
       #link_id|url/peice|section_tag|rotate_degree_string[optional]|crop_string|
 
       new_line <<- data.frame(link_id=corp$link_id[cnt],
@@ -625,10 +630,14 @@ shinyServer(function(input, output, session) {
                               section_tag=get_sections(),
                               rotate_degree=rotate_degree,
                               crop_string=bounds,
-                              timestamp=time_now
+                              timestamp=time_now,
+                              x_min=brush_info_full$xmin,
+                              y_min=brush_info_full$ymin,
+                              x_max=brush_info_full$xmax,
+                              y_max=brush_info_full$ymax
                               )
 
-      print(new_line)
+      #print(new_line)
 
       generate_full_info(input$plot_brush1, im, time_now)
 
